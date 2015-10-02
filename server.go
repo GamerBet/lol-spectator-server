@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -19,15 +20,17 @@ func LoggingMW(h http.Handler) http.Handler {
 }
 
 func main() {
+	var port = flag.String("port", "8080", "Declare a port to listen on.")
+	flag.Parse()
+
 	f, err := os.OpenFile("logfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
 	defer f.Close()
 
-	log.SetOutput(f)
-
-	log.Println("Listening...")
+	// log.SetOutput(f)
+	log.Printf("Listening on port %v...\n", *port)
 
 	r := mux.NewRouter()
 	mw.Decorate(
@@ -43,7 +46,7 @@ func main() {
 	r.HandleFunc("/observer-mode/rest/consumer/getGameDataChunk/{platformId}/{gameId}/{chunkId}/token", spec.GetGameDataChunkHandler)
 	r.HandleFunc("/observer-mode/rest/consumer/getKeyFrame/{platformId}/{gameId}/{keyFrameId}/token", spec.GetKeyFrameHandler)
 
-	if err := http.ListenAndServe(":8000", nil); err != nil {
+	if err := http.ListenAndServe(":"+*port, nil); err != nil {
 		panic(err)
 	}
 }
