@@ -46,6 +46,8 @@ func main() {
 	r.HandleFunc("/observer-mode/rest/consumer/getGameDataChunk/{platformId}/{gameId}/{chunkId}/token", spec.GetGameDataChunkHandler)
 	r.HandleFunc("/observer-mode/rest/consumer/getKeyFrame/{platformId}/{gameId}/{keyFrameId}/token", spec.GetKeyFrameHandler)
 
+
+	http.Handle("/", r)
 	if err := http.ListenAndServe(":"+*port, nil); err != nil {
 		panic(err)
 	}
